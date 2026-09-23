@@ -439,16 +439,35 @@ function openDetails(roll) {
 }
 
 function renderAnalysis() {
-  const analysis = Module.getAnalysis().split("|");
-  const hi = parseRecord(analysis[0]);
-  const lo = parseRecord(analysis[1]);
-  $("analysisHighest").textContent = hi ? hi.cgpa.toFixed(2) : "—";
-  $("analysisHighestName").textContent = hi ? hi.name : "No CGPA available";
-  $("analysisLowest").textContent = lo ? lo.cgpa.toFixed(2) : "—";
-  $("analysisLowestName").textContent = lo ? lo.name : "No CGPA available";
-  $("analysisAverage").textContent = analysis[2] && analysis[2] !== "-" ? Number(analysis[2]).toFixed(2) : "—";
-  const above8 = Number(analysis[3]||0), below6 = Number(analysis[4]||0), noCgpa = Number(analysis[5]||0);
-  $("performanceSummary").innerHTML = [["Total Students",allRecords.length],["CGPA ≥ 8.00",above8],["CGPA below 6.00",below6],["Without previous SGPA",noCgpa]].map(x=>`<div><span>${esc(x[0])}</span><strong>${x[1]}</strong></div>`).join("");
+  const analysis = JSON.parse(Module.getAnalysis());
+
+  const validRecords = allRecords.filter(r => r.cgpa != null);
+
+  const highest = validRecords.length
+    ? validRecords.reduce((a, b) => a.cgpa > b.cgpa ? a : b)
+    : null;
+
+  const lowest = validRecords.length
+    ? validRecords.reduce((a, b) => a.cgpa < b.cgpa ? a : b)
+    : null;
+
+  $("analysisHighest").textContent = highest ? highest.cgpa.toFixed(2) : "—";
+  $("analysisHighestName").textContent = highest ? highest.name : "No CGPA available";
+
+  $("analysisLowest").textContent = lowest ? lowest.cgpa.toFixed(2) : "—";
+  $("analysisLowestName").textContent = lowest ? lowest.name : "No CGPA available";
+
+  $("analysisAverage").textContent =
+    validRecords.length ? analysis.averageCGPA.toFixed(2) : "—";
+
+  $("performanceSummary").innerHTML =
+    [["Total Students", analysis.total],
+     ["CGPA ≥ 8.00", analysis.cgpa8OrAbove],
+     ["CGPA below 6.00", analysis.below6],
+     ["Without previous SGPA", analysis.withoutPreviousSGPA]]
+    .map(x => `<div class="summary-row"><span>${x[0]}</span><b>${x[1]}</b></div>`)
+    .join("");
+
   renderAnalysisLists();
 }
 
