@@ -412,9 +412,15 @@ function formError(message) { $("formMessage").textContent = message; $("formMes
 function errorMessage(code) { const m={1:"Invalid roll number.",2:"A student with this roll number already exists.",3:"Invalid student name.",4:"Age must be between 16 and 35.",5:"Select Male or Female.",6:"Select a valid branch.",7:"Mobile number must contain 10 digits.",9:"Select a semester from 1st to 8th.",11:"Previous semester SGPAs are invalid.",20:"Student was not found."}; return m[code]||"Unable to save the student."; }
 
 function removeStudent(roll) {
-  const r = allRecords.find(x=>x.roll===roll);
-  if(!r || !confirm(`Delete ${r.name} (${r.roll})?`)) return;
-  if(Module.deleteStudent(roll)) { reloadFromCpp(); showToast("Student deleted."); }
+    const index = allRecords.findIndex(x => x.roll === roll);
+    const r = allRecords[index];
+
+    if(index < 0 || !confirm(`Delete ${r.name} (${r.roll})?`)) return;
+
+    if(Module.deleteStudent(index)) {
+        reloadFromCpp();
+        showToast("Student deleted.");
+    }
 }
 
 function clearAll() {
