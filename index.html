@@ -414,9 +414,13 @@ function submitStudent(event) {
   if(!d.semester) return formError("Please select the current semester.");
   if(d.semester>1 && d.values.slice(0,d.semester-1).some(v=>!Number.isFinite(v)||v<0||v>10)) return formError("Every previous-semester SGPA must be between 0.00 and 10.00.");
   let code;
-  if(editingRecord) code = Module.updateStudent(editingRecord.roll,...formArgs(d).slice(0));
-  else code = Module.addStudent(...formArgs(d));
+if(editingRecord) {
+  code = Module.updateStudent(editingRecord.roll,...formArgs(d).slice(0));
   if(code !== 0) return formError(errorMessage(code));
+} else {
+  code = Module.addStudent(...formArgs(d));
+  if(!code) return formError("Unable to save the student.");
+}
   editingRecord = null;
   reloadFromCpp();
   showToast("Student saved successfully.");
