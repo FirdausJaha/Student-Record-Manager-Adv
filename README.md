@@ -2,9 +2,7 @@
 
 ## Live demo
 
-After GitHub Pages is enabled for the repository `Student-Record-Manager-Adv` under `FirdausJaha`, the project URL will be:
-
-`https://firdausjaha.github.io/Student-Record-Manager-Adv/`
+[Open Student Record Manager — Adv](https://firdausjaha.github.io/Student-Record-Manager-Adv/)
 
 ## Overview
 
