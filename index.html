@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#123b67">
+  <title>Student Record Manager — Advanced</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M8 25 32 12l24 13-24 13L8 25Z"/><path d="M17 31v12c8 7 22 7 30 0V31"/><path d="M56 26v17"/></svg></div>
+      <div><div class="brand-title">Student Record</div><div class="brand-subtitle">Manager · Advanced</div></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-screen="dashboard"><span>⌂</span>Dashboard</button>
+      <button class="nav-item" data-screen="students"><span>▤</span>Students</button>
+      <button class="nav-item" data-screen="add"><span>＋</span>Add Student</button>
+      <button class="nav-item" data-screen="analysis"><span>◒</span>Analysis</button>
+      <button class="nav-item" data-screen="about"><span>ⓘ</span>About Project</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="capacity-card">
+        <div class="capacity-head"><span>Student Storage</span><strong>No fixed cap</strong></div>
+        <p>Student data grows dynamically in C++. Practical capacity depends on available browser memory and local storage.</p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu">☰</button>
+      <div><div class="breadcrumb" id="breadcrumb">Overview</div><h1 id="pageTitle">Dashboard</h1></div>
+      <button class="add-top" id="openAddTop">＋ Add Student</button>
+    </header>
+
+    <div class="content">
+      <section class="screen active" id="screen-dashboard">
+        <div class="welcome-row">
+          <div><h2>Student information at a glance</h2><p>Manage, search and analyze student academic information from one place.</p></div>
+          <button class="primary large" data-screen-link="add">＋ Add Student</button>
+        </div>
+
+        <div class="stat-grid">
+          <button class="stat-card blue clickable-stat" id="totalCard"><div class="stat-icon">▤</div><div><span>Total Students</span><strong id="totalStudents">0</strong></div></button>
+          <button class="stat-card green clickable-stat" id="averageCard"><div class="stat-icon">↗</div><div><span>Average CGPA</span><strong id="averageCgpa">—</strong></div></button>
+          <button class="stat-card gold clickable-stat" id="highestCard"><div class="stat-icon">★</div><div><span>Highest CGPA</span><strong id="highestCgpa">—</strong></div></button>
+          <button class="stat-card red clickable-stat" id="lowestCard"><div class="stat-icon">↓</div><div><span>Lowest CGPA</span><strong id="lowestCgpa">—</strong></div></button>
+        </div>
+
+        <div class="dashboard-grid two">
+          <article class="panel"><div class="panel-head"><div><h3>Gender Distribution</h3><p>Click a group to view matching students.</p></div></div><div id="genderDashboard" class="distribution-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Branch Distribution</h3><p>Explore students by branch.</p></div></div><div id="branchDashboard" class="distribution-list"></div></article>
+        </div>
+
+        <div class="dashboard-grid two">
+          <article class="panel"><div class="panel-head"><div><h3>Semester Distribution</h3><p>Current semester of each student.</p></div></div><div id="semesterDashboard" class="distribution-list compact-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Top Performers</h3><p>Highest calculated CGPA.</p></div><button class="text-button" data-screen-link="analysis">Full analysis →</button></div><div id="topPerformers"></div></article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-head"><div><h3>Recent Students</h3><p>Latest students in the manager.</p></div><button class="text-button" data-screen-link="students">View all →</button></div>
+          <div class="mini-table-wrap"><table><thead><tr><th>Roll No.</th><th>Name</th><th>Branch</th><th>Semester</th><th>CGPA</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+          <div class="empty compact" id="recentEmpty">No students yet.</div>
+        </article>
+
+        <article class="panel quick-panel">
+          <div class="panel-head"><div><h3>Quick Actions</h3><p>Common tasks.</p></div><button class="danger-outline" id="clearAllRecords">Clear All</button></div>
+          <div class="quick-actions">
+            <button class="quick-action" data-screen-link="add"><span class="qa-icon">＋</span><span><strong>Add Student</strong><small>Create a new student</small></span><b>→</b></button>
+            <button class="quick-action" data-screen-link="students"><span class="qa-icon">⌕</span><span><strong>Find Students</strong><small>Search and filter students</small></span><b>→</b></button>
+            <button class="quick-action" data-screen-link="analysis"><span class="qa-icon">◒</span><span><strong>View Analysis</strong><small>Explore academic insights</small></span><b>→</b></button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-students">
+        <div class="section-heading"><div><h2>Students</h2><p>Search, filter, view, update and delete student information.</p></div><button class="primary" data-screen-link="add">＋ Add Student</button></div>
+        <article class="panel">
+          <div class="toolbar wrap">
+            <div class="search-inline"><span>⌕</span><input id="tableFilter" placeholder="Search by roll number, name, mobile or branch..."></div>
+            <select id="branchFilter" class="select"><option value="">All Branches</option></select>
+            <select id="genderFilter" class="select"><option value="">All Genders</option><option>Male</option><option>Female</option></select>
+            <select id="semesterFilter" class="select"><option value="0">All Semesters</option></select>
+            <select id="sortSelect" class="select"><option value="default">Sort: Recent</option><option value="name">Name A–Z</option><option value="roll">Roll Number</option><option value="high">CGPA: High to Low</option><option value="low">CGPA: Low to High</option></select>
+            <button class="secondary small-btn" id="clearFilters">Clear Filters</button>
+          </div>
+          <div class="active-filters" id="activeFilters"></div>
+          <div class="table-wrap"><table class="main-table"><thead><tr><th>Roll Number</th><th>Student</th><th>Branch</th><th>Gender</th><th>Sem</th><th>CGPA</th><th>Actions</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+          <div class="empty" id="tableEmpty"><div class="empty-icon">▤</div><h3>No matching students</h3><p>Try changing the search or filters.</p></div>
+          <div class="table-footer"><span id="countText">0 students</span><span>No fixed student-count limit</span></div>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-add">
+        <div class="section-heading"><div><h2 id="formPageTitle">Add Student</h2><p>Enter student information. CGPA is calculated automatically from previous SGPAs.</p></div></div>
+        <article class="panel form-panel">
+          <form id="studentForm">
+            <input type="hidden" id="editingOriginalRoll">
+            <div class="form-section"><div class="form-section-title"><span>01</span><div><h3>Personal Information</h3><p>Basic student details.</p></div></div>
+              <div class="form-grid">
+                <label>Roll Number<input id="roll" required maxlength="24" placeholder="e.g. 25B11CS259"></label>
+                <label>Student Name<input id="name" required maxlength="80" placeholder="e.g. Aarav Reddy"></label>
+                <label>Age<input id="age" type="number" min="16" max="35" required placeholder="20"></label>
+                <label>Gender<select id="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option></select></label>
+                <label>Mobile Number<input id="mobile" inputmode="numeric" maxlength="10" required placeholder="10-digit mobile number"></label>
+                <label>Branch<select id="branch" required><option value="">Select Branch</option></select></label>
+              </div>
+            </div>
+            <div class="form-section"><div class="form-section-title"><span>02</span><div><h3>Academic Information</h3><p>Select the current semester. Only completed previous semesters are requested.</p></div></div>
+              <div class="form-grid single-field"><label>Current Semester<select id="currentSemester" required></select></label></div>
+              <div id="sgpaArea" class="sgpa-area"></div>
+              <div class="cgpa-card"><div><span>Calculated CGPA</span><small>10-point scale · calculated in C++ · truncated to two decimals.</small></div><strong id="cgpaPreview">N/A</strong></div>
+            </div>
+            <div id="formMessage" class="form-message"></div>
+            <div class="dialog-actions"><button type="button" class="secondary" id="cancelForm">Cancel</button><button type="submit" class="primary" id="saveStudent">Add Student</button></div>
+          </form>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-analysis">
+        <div class="section-heading"><div><h2>Performance Analysis</h2><p>Academic analysis based only on SGPA and calculated CGPA.</p></div></div>
+        <div class="analysis-grid">
+          <article class="analysis-feature highest-card"><span class="feature-label">HIGHEST</span><div class="feature-icon">★</div><h3 id="analysisHighest">—</h3><p id="analysisHighestName">No CGPA available</p></article>
+          <article class="analysis-feature lowest-card"><span class="feature-label">LOWEST</span><div class="feature-icon">↓</div><h3 id="analysisLowest">—</h3><p id="analysisLowestName">No CGPA available</p></article>
+          <article class="analysis-feature average-card"><span class="feature-label">AVERAGE</span><div class="feature-icon">↗</div><h3 id="analysisAverage">—</h3><p>Average calculated CGPA</p></article>
+        </div>
+
+        <div class="dashboard-grid two">
+          <article class="panel"><div class="panel-head"><div><h3>CGPA Distribution</h3><p>Students grouped by calculated CGPA.</p></div></div><div id="cgpaDistribution" class="distribution-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Performance Summary</h3><p>Current academic overview.</p></div></div><div id="performanceSummary" class="summary-list"></div></article>
+        </div>
+
+        <div class="dashboard-grid two">
+          <article class="panel"><div class="panel-head"><div><h3>Branch Performance</h3><p>Student count and average CGPA by branch.</p></div></div><div id="branchAnalysis" class="analysis-list"></div></article>
+          <article class="panel"><div class="panel-head"><div><h3>Gender Analysis</h3><p>Student count and average CGPA.</p></div></div><div id="genderAnalysis" class="analysis-list"></div></article>
+        </div>
+
+        <article class="panel"><div class="panel-head"><div><h3>Semester Analysis</h3><p>Student count and average CGPA by current semester.</p></div></div><div id="semesterAnalysis" class="analysis-list"></div></article>
+        <article class="panel"><div class="panel-head"><div><h3>CGPA Ranking</h3><p>Students ordered by calculated CGPA.</p></div></div><div id="rankingList" class="ranking-list"></div></article>
+      </section>
+
+      <section class="screen" id="screen-about">
+        <div class="section-heading"><div><h2>About Project</h2><p>Architecture and concepts used in the Advanced Edition.</p></div></div>
+        <article class="panel about-card">
+          <h3>Project Objective</h3>
+          <p>Student Record Manager is a C++-centered student management application delivered through a browser interface. C++ owns the student data, validation, searching, filtering, sorting, SGPA/CGPA calculation and analysis.</p>
+          <h3>Academic Model</h3>
+          <p>The application uses only a 10-point GPA scale. If the current semester is N, only SGPAs from semesters 1 through N−1 are entered. CGPA is calculated in C++ as the arithmetic mean of completed previous SGPAs and truncated to two decimal places. First-semester students show CGPA as N/A.</p>
+          <h3>Storage Model</h3>
+          <p>The C++ layer uses dynamically growing raw arrays rather than a fixed 100-student array. This removes an artificial application-level student limit. JavaScript serializes the C++ records into browser localStorage and imports them back into C++ when the page starts. Actual browser memory and storage quotas still apply.</p>
+          <h3>Technology</h3>
+          <div class="tech-list"><span>C++</span><span>WebAssembly</span><span>Emscripten</span><span>HTML</span><span>CSS</span><span>JavaScript</span><span>localStorage</span><span>GitHub Pages</span></div>
+          <h3>C++ Concepts Demonstrated</h3>
+          <ul><li>Arrays and two-dimensional arrays</li><li>Dynamic memory management</li><li>Strings and validation</li><li>Functions</li><li>Searching and filtering</li><li>Sorting</li><li>Deletion by shifting array elements</li><li>Aggregation and academic analysis</li><li>Emscripten/WebAssembly bindings</li></ul>
+          <h3>Demo Data</h3>
+          <p>The first launch contains 30 original demonstration students when no saved browser data exists. After that, saved data is restored instead of being overwritten.</p>
+        </article>
+      </section>
+    </div>
+  </main>
+</div>
+
+<dialog class="modal" id="studentModal">
+  <div class="profile-head"><div class="profile-avatar" id="modalAvatar">A</div><div><span class="eyebrow">Student Profile</span><h2 id="modalName">Student</h2><p id="modalRoll">Roll Number</p></div></div>
+  <div class="profile-grid" id="modalProfileGrid"></div>
+  <div class="profile-section"><h3>Previous Semester SGPAs</h3><div class="profile-sgpa" id="modalSgpa"></div></div>
+  <div class="modal-actions"><button class="secondary" id="closeModal">Close</button><button class="primary" id="editFromModal">Edit Student</button></div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let Module = {
+  onRuntimeInitialized() {
+    window.cppReady = true;
+    startApplication();
+  }
+};
+
+const BRANCHES = ["CSE","ECE","EEE","IT","MECH","CSE (AI & ML)","CSE (DS)","Civil"];
+const STORAGE_KEY = "studentRecordManagerAdvancedV2";
+let allRecords = [];
+let currentViewRecords = [];
+let editingRecord = null;
+let currentModalRecord = null;
+let toastTimer = null;
+
+const $ = id => document.getElementById(id);
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+
+function parseRecord(row) {
+  if (!row) return null;
+  const f = row.split("~");
+  if (f.length < 15) return null;
+  return {
+    roll: f[0], name: f[1], age: Number(f[2]), gender: f[3], mobile: f[4], branch: f[5], semester: Number(f[6]),
+    sgpa: f.slice(7, 14).map(v => v === "-" ? null : Number(v)), cgpa: f[14] === "-" ? null : Number(f[14])
+  };
+}
+
+function parseRecords(serialized) {
+  if (!serialized) return [];
+  return serialized.split("|").map(parseRecord).filter(Boolean);
+}
+
+function recordsToRows(records) {
+  return records.map(r => [r.roll,r.name,r.age,r.gender,r.mobile,r.branch,r.semester,...r.sgpa.map(v => v == null ? "-" : Number(v).toFixed(2)),r.cgpa == null ? "-" : Number(r.cgpa).toFixed(2)].join("~")).join("|");
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem(STORAGE_KEY, recordsToRows(allRecords));
+  } catch (e) {
+    showToast("Browser storage is full. Export/preserve data before adding more.", true);
+  }
+}
+
+function reloadFromCpp() {
+  allRecords = parseRecords(Module.getRecords());
+  saveLocal();
+  renderAll();
+}
+
+function initializeData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved !== null && saved !== "") {
+    Module.importRecords(saved);
+  } else {
+    Module.loadDemoData();
+  }
+  allRecords = parseRecords(Module.getRecords());
+  saveLocal();
+}
+
+function showToast(message, error=false) {
+  const el = $("toast");
+  el.textContent = message;
+  el.className = "toast show" + (error ? " error" : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = "toast", 2600);
+}
+
+function navigate(screen) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.screen === screen));
+  $("screen-" + screen).classList.add("active");
+  const titles = {dashboard:["Overview","Dashboard"],students:["Management","Students"],add:["Student Entry",editingRecord?"Edit Student":"Add Student"],analysis:["Academic Insights","Analysis"],about:["Project","About Project"]};
+  $("breadcrumb").textContent = titles[screen][0];
+  $("pageTitle").textContent = titles[screen][1];
+  if (screen === "students") renderStudents();
+  if (screen === "analysis") renderAnalysis();
+  if (screen === "dashboard") renderDashboard();
+  if (screen === "add") renderForm();
+  if (screen === "about") window.scrollTo(0,0);
+  $("sidebar").classList.remove("open");
+  $("mobileOverlay").classList.remove("show");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function setupNavigation() {
+  document.querySelectorAll("[data-screen], [data-screen-link]").forEach(el => el.addEventListener("click", () => navigate(el.dataset.screen || el.dataset.screenLink)));
+  $("openAddTop").addEventListener("click", () => { editingRecord = null; navigate("add"); });
+  $("mobileMenu").addEventListener("click", () => { $("sidebar").classList.add("open"); $("mobileOverlay").classList.add("show"); });
+  $("mobileOverlay").addEventListener("click", () => { $("sidebar").classList.remove("open"); $("mobileOverlay").classList.remove("show"); });
+}
+
+function populateOptions() {
+  $("branch").innerHTML = '<option value="">Select Branch</option>' + BRANCHES.map(b => `<option>${esc(b)}</option>`).join("");
+  $("branchFilter").innerHTML = '<option value="">All Branches</option>' + BRANCHES.map(b => `<option>${esc(b)}</option>`).join("");
+  $("currentSemester").innerHTML = '<option value="">Select Current Semester</option>' + Array.from({length:8},(_,i)=>`<option value="${i+1}">${i+1}${ordinal(i+1)} Semester</option>`).join("");
+  $("semesterFilter").innerHTML = '<option value="0">All Semesters</option>' + Array.from({length:8},(_,i)=>`<option value="${i+1}">${i+1}${ordinal(i+1)} Semester</option>`).join("");
+}
+
+function ordinal(n) { return n===1?"st":n===2?"nd":n===3?"rd":"th"; }
+
+function renderDashboard() {
+  const total = allRecords.length;
+  $("totalStudents").textContent = total;
+  const withCgpa = allRecords.filter(r => r.cgpa != null);
+  $("averageCgpa").textContent = withCgpa.length ? Number(Module.averageCGPA()).toFixed(2) : "N/A";
+  const sorted = [...withCgpa].sort((a,b)=>b.cgpa-a.cgpa);
+  $("highestCgpa").textContent = sorted.length ? sorted[0].cgpa.toFixed(2) : "N/A";
+  $("lowestCgpa").textContent = sorted.length ? sorted[sorted.length-1].cgpa.toFixed(2) : "N/A";
+
+  const gender = ["Male","Female"].map(g=>({label:g,count:allRecords.filter(r=>r.gender===g).length}));
+  renderDistribution("genderDashboard", gender, label => applyQuickFilter("gender", label));
+  const branches = BRANCHES.map(b=>({label:b,count:allRecords.filter(r=>r.branch===b).length}));
+  renderDistribution("branchDashboard", branches, label => applyQuickFilter("branch", label));
+  const semesters = Array.from({length:8},(_,i)=>({label:`${i+1}${ordinal(i+1)} Semester`,count:allRecords.filter(r=>r.semester===i+1).length}));
+  renderDistribution("semesterDashboard", semesters, label => applyQuickFilter("semester", Number(label.match(/^\d+/)[0])));
+
+  $("topPerformers").innerHTML = sorted.slice(0,5).map((r,i)=>`<button class="top-row" data-roll="${esc(r.roll)}"><span class="rank">${i+1}</span><span><b>${esc(r.name)}</b><small>${esc(r.roll)} · ${esc(r.branch)}</small></span><b>${r.cgpa.toFixed(2)}</b></button>`).join("") || '<div class="empty compact">No calculated CGPA yet.</div>';
+  $("topPerformers").querySelectorAll("[data-roll]").forEach(b=>b.addEventListener("click",()=>openDetails(b.dataset.roll)));
+
+  const recent = allRecords.slice(-5).reverse();
+  $("recentBody").innerHTML = recent.map(r=>`<tr><td><span class="roll-pill">${esc(r.roll)}</span></td><td>${esc(r.name)}</td><td>${esc(r.branch)}</td><td>${r.semester}${ordinal(r.semester)}</td><td>${r.cgpa==null?"N/A":r.cgpa.toFixed(2)}</td></tr>`).join("");
+  $("recentEmpty").style.display = recent.length ? "none" : "flex";
+}
+
+function renderDistribution(id, items, click) {
+  const max = Math.max(1,...items.map(x=>x.count));
+  $(id).innerHTML = items.map(x=>`<button class="distribution-row" data-value="${esc(x.label)}"><span class="dist-label">${esc(x.label)}</span><span class="dist-bar"><i style="width:${Math.round(x.count/max*100)}%"></i></span><strong>${x.count}</strong></button>`).join("");
+  $(id).querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>click(b.dataset.value)));
+}
+
+function applyQuickFilter(type, value) {
+  navigate("students");
+  $("tableFilter").value = "";
+  $("branchFilter").value = type === "branch" ? value : "";
+  $("genderFilter").value = type === "gender" ? value : "";
+  $("semesterFilter").value = type === "semester" ? value : "0";
+  renderStudents();
+}
+
+function getDisplayedRecords() {
+  const q = $("tableFilter").value.trim().toLowerCase();
+  const branch = $("branchFilter").value;
+  const gender = $("genderFilter").value;
+  const semester = Number($("semesterFilter").value);
+  let records = allRecords.filter(r => (!q || `${r.roll} ${r.name} ${r.mobile} ${r.branch}`.toLowerCase().includes(q)) && (!branch || r.branch===branch) && (!gender || r.gender===gender) && (!semester || r.semester===semester));
+  const sort = $("sortSelect").value;
+  if(sort === "name") records.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(sort === "roll") records.sort((a,b)=>a.roll.localeCompare(b.roll));
+  else if(sort === "high") records.sort((a,b)=>(b.cgpa??-1)-(a.cgpa??-1));
+  else if(sort === "low") records.sort((a,b)=>(a.cgpa??99)-(b.cgpa??99));
+  return records;
+}
+
+function renderStudents() {
+  const records = getDisplayedRecords();
+  currentViewRecords = records;
+  $("recordsBody").innerHTML = records.map(r=>`<tr>
+    <td><span class="roll-pill">${esc(r.roll)}</span></td>
+    <td><div class="student-cell"><div class="avatar">${esc(r.name.charAt(0).toUpperCase())}</div><span><b>${esc(r.name)}</b><small>${esc(r.mobile)}</small></span></div></td>
+    <td>${esc(r.branch)}</td><td>${esc(r.gender)}</td><td>${r.semester}${ordinal(r.semester)}</td><td><strong>${r.cgpa==null?"N/A":r.cgpa.toFixed(2)}</strong></td>
+    <td><div class="row-actions"><button class="action-btn" data-view="${esc(r.roll)}">View</button><button class="action-btn" data-edit="${esc(r.roll)}">Edit</button><button class="action-btn delete" data-delete="${esc(r.roll)}">Delete</button></div></td>
+  </tr>`).join("");
+  $("tableEmpty").style.display = records.length ? "none" : "flex";
+  $("countText").textContent = `${records.length} student${records.length===1?"":"s"}`;
+  const filters=[];
+  if($("tableFilter").value) filters.push(`Search: ${$("tableFilter").value}`);
+  if($("branchFilter").value) filters.push($("branchFilter").value);
+  if($("genderFilter").value) filters.push($("genderFilter").value);
+  if(Number($("semesterFilter").value)) filters.push(`${$("semesterFilter").value}${ordinal(Number($("semesterFilter").value))} Semester`);
+  $("activeFilters").innerHTML = filters.map(x=>`<span>${esc(x)}</span>`).join("");
+  $("recordsBody").querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>openDetails(b.dataset.view)));
+  $("recordsBody").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>beginEdit(b.dataset.edit)));
+  $("recordsBody").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>removeStudent(b.dataset.delete)));
+}
+
+function renderForm() {
+  $("formPageTitle").textContent = editingRecord ? "Edit Student" : "Add Student";
+  $("saveStudent").textContent = editingRecord ? "Save Changes" : "Add Student";
+  if (!editingRecord) {
+    $("studentForm").reset();
+    $("editingOriginalRoll").value = "";
+    $("cgpaPreview").textContent = "N/A";
+    renderSGPAFields();
+  }
+}
+
+function renderSGPAFields(values = null) {
+  const semester = Number($("currentSemester").value || 0);
+  const area = $("sgpaArea");
+  if (!semester) { area.innerHTML = '<div class="no-sgpa">Select the current semester to show completed previous-semester SGPA fields.</div>'; $("cgpaPreview").textContent="N/A"; return; }
+  if (semester === 1) { area.innerHTML = '<div class="no-sgpa">1st-semester student: there are no previous SGPAs, so CGPA is shown as N/A.</div>'; $("cgpaPreview").textContent="N/A"; return; }
+  area.innerHTML = `<div class="sgpa-grid">${Array.from({length:semester-1},(_,i)=>`<label>${i+1}${ordinal(i+1)} Semester SGPA<input class="sgpa-input" data-semester="${i+1}" type="number" min="0" max="10" step="0.01" required value="${values && values[i]!=null ? values[i] : ""}" placeholder="0.00 – 10.00"></label>`).join("")}</div>`;
+  area.querySelectorAll(".sgpa-input").forEach(input=>input.addEventListener("input",updateCgpaPreview));
+  updateCgpaPreview();
+}
+
+function updateCgpaPreview() {
+  const semester = Number($("currentSemester").value || 0);
+  if(semester <= 1) { $("cgpaPreview").textContent="N/A"; return; }
+  const vals = [...document.querySelectorAll(".sgpa-input")].map(x=>Number(x.value));
+  if(vals.length !== semester-1 || vals.some(v=>!Number.isFinite(v)||v<0||v>10)) { $("cgpaPreview").textContent="—"; return; }
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  $("cgpaPreview").textContent = (Math.floor((avg + 1e-9)*100)/100).toFixed(2);
+}
+
+function collectForm() {
+  const semester = Number($("currentSemester").value);
+  const values = Array.from({length:7},(_,i)=>-1);
+  document.querySelectorAll(".sgpa-input").forEach((input,i)=>values[i]=Number(input.value));
+  return {roll:$("roll").value.trim(),name:$("name").value.trim(),age:Number($("age").value),gender:$("gender").value,mobile:$("mobile").value.trim(),branch:$("branch").value,semester,values};
+}
+
+function formArgs(d) { return [d.roll,d.name,d.age,d.gender,d.branch,d.mobile,d.semester,...d.values]; }
+
+function beginEdit(roll) {
+  const r = allRecords.find(x=>x.roll===roll);
+  if(!r) return;
+  editingRecord = r;
+  navigate("add");
+  $("editingOriginalRoll").value = r.roll;
+  $("roll").value = r.roll;
+  $("name").value = r.name;
+  $("age").value = r.age;
+  $("gender").value = r.gender;
+  $("mobile").value = r.mobile;
+  $("branch").value = r.branch;
+  $("currentSemester").value = r.semester;
+  renderSGPAFields(r.sgpa);
+}
+
+function submitStudent(event) {
+  event.preventDefault();
+  $("formMessage").textContent = "";
+  const d = collectForm();
+  if(!/^[A-Za-z0-9]+$/.test(d.roll)) return formError("Roll number must contain only letters and numbers.");
+  if(d.age<16||d.age>35) return formError("Age must be between 16 and 35.");
+  if(!/^\d{10}$/.test(d.mobile)) return formError("Mobile number must contain exactly 10 digits.");
+  if(!d.semester) return formError("Please select the current semester.");
+  if(d.semester>1 && d.values.slice(0,d.semester-1).some(v=>!Number.isFinite(v)||v<0||v>10)) return formError("Every previous-semester SGPA must be between 0.00 and 10.00.");
+  let code;
+  if(editingRecord) code = Module.updateStudent(editingRecord.roll,...formArgs(d).slice(0));
+  else code = Module.addStudent(...formArgs(d));
+  if(code !== 0) return formError(errorMessage(code));
+  editingRecord = null;
+  reloadFromCpp();
+  showToast("Student saved successfully.");
+  navigate("students");
+}
+
+function formError(message) { $("formMessage").textContent = message; $("formMessage").className="form-message error"; }
+function errorMessage(code) { const m={1:"Invalid roll number.",2:"A student with this roll number already exists.",3:"Invalid student name.",4:"Age must be between 16 and 35.",5:"Select Male or Female.",6:"Select a valid branch.",7:"Mobile number must contain 10 digits.",9:"Select a semester from 1st to 8th.",11:"Previous semester SGPAs are invalid.",20:"Student was not found."}; return m[code]||"Unable to save the student."; }
+
+function removeStudent(roll) {
+  const r = allRecords.find(x=>x.roll===roll);
+  if(!r || !confirm(`Delete ${r.name} (${r.roll})?`)) return;
+  if(Module.deleteStudent(roll)) { reloadFromCpp(); showToast("Student deleted."); }
+}
+
+function clearAll() {
+  if(!allRecords.length) return;
+  if(!confirm("Clear all students? This removes the saved student data from this browser.")) return;
+  Module.clearAll();
+  reloadFromCpp();
+  showToast("All students cleared.");
+}
+
+function openDetails(roll) {
+  const r = allRecords.find(x=>x.roll===roll);
+  if(!r) return;
+  currentModalRecord = r;
+  $("modalAvatar").textContent = r.name.charAt(0).toUpperCase();
+  $("modalName").textContent = r.name;
+  $("modalRoll").textContent = r.roll;
+  $("modalProfileGrid").innerHTML = [["Age",r.age],["Gender",r.gender],["Mobile",r.mobile],["Branch",r.branch],["Current Semester",`${r.semester}${ordinal(r.semester)} Semester`],["CGPA",r.cgpa==null?"N/A":r.cgpa.toFixed(2)]].map(x=>`<div><span>${esc(x[0])}</span><strong>${esc(x[1])}</strong></div>`).join("");
+  const completed = r.sgpa.slice(0,r.semester-1);
+  $("modalSgpa").innerHTML = completed.length ? completed.map((v,i)=>`<div><span>${i+1}${ordinal(i+1)} Semester SGPA</span><strong>${v==null?"—":v.toFixed(2)}</strong></div>`).join("") : '<div><span>Previous SGPA</span><strong>N/A</strong></div>';
+  $("studentModal").showModal();
+}
+
+function renderAnalysis() {
+  const analysis = Module.getAnalysis().split("|");
+  const hi = parseRecord(analysis[0]);
+  const lo = parseRecord(analysis[1]);
+  $("analysisHighest").textContent = hi ? hi.cgpa.toFixed(2) : "—";
+  $("analysisHighestName").textContent = hi ? hi.name : "No CGPA available";
+  $("analysisLowest").textContent = lo ? lo.cgpa.toFixed(2) : "—";
+  $("analysisLowestName").textContent = lo ? lo.name : "No CGPA available";
+  $("analysisAverage").textContent = analysis[2] && analysis[2] !== "-" ? Number(analysis[2]).toFixed(2) : "—";
+  const above8 = Number(analysis[3]||0), below6 = Number(analysis[4]||0), noCgpa = Number(analysis[5]||0);
+  $("performanceSummary").innerHTML = [["Total Students",allRecords.length],["CGPA ≥ 8.00",above8],["CGPA below 6.00",below6],["Without previous SGPA",noCgpa]].map(x=>`<div><span>${esc(x[0])}</span><strong>${x[1]}</strong></div>`).join("");
+  renderAnalysisLists();
+}
+
+function renderAnalysisLists() {
+  const dist = Module.getCGPADistribution().split("|").map(x=>{const p=x.split("~");return {label:p[0],count:Number(p[1])};});
+  renderDistribution("cgpaDistribution",dist,()=>{});
+  const branch = Module.getBranchAnalysis().split("|").map(x=>x.split("~"));
+  $("branchAnalysis").innerHTML = branch.map(x=>`<div class="analysis-row"><span>${esc(x[0])}</span><small>${x[1]} student${Number(x[1])===1?"":"s"}</small><strong>${x[2]==="-"?"N/A":x[2]}</strong></div>`).join("");
+  const gender = Module.getGenderAnalysis().split("|").map(x=>x.split("~"));
+  $("genderAnalysis").innerHTML = gender.map(x=>`<div class="analysis-row"><span>${esc(x[0])}</span><small>${x[1]} student${Number(x[1])===1?"":"s"}</small><strong>${x[2]==="-"?"N/A":x[2]}</strong></div>`).join("");
+  const semester = Module.getSemesterAnalysis().split("|").map(x=>x.split("~"));
+  $("semesterAnalysis").innerHTML = semester.map(x=>`<div class="analysis-row"><span>${x[0]}${ordinal(Number(x[0]))} Semester</span><small>${x[1]} student${Number(x[1])===1?"":"s"}</small><strong>${x[2]==="-"?"N/A":x[2]}</strong></div>`).join("");
+  const ranking = parseRecords(Module.sortByCGPA(true));
+  $("rankingList").innerHTML = ranking.slice(0,15).map((r,i)=>`<button class="ranking-row" data-roll="${esc(r.roll)}"><span class="rank">${i+1}</span><span><b>${esc(r.name)}</b><small>${esc(r.roll)} · ${esc(r.branch)}</small></span><b>${r.cgpa==null?"N/A":r.cgpa.toFixed(2)}</b></button>`).join("") || '<div class="empty compact">No students yet.</div>';
+  $("rankingList").querySelectorAll("[data-roll]").forEach(b=>b.addEventListener("click",()=>openDetails(b.dataset.roll)));
+}
+
+function renderAll() {
+  renderDashboard();
+  renderStudents();
+  renderAnalysis();
+}
+
+function startApplication() {
+  setupNavigation();
+  populateOptions();
+  $("currentSemester").addEventListener("change",()=>renderSGPAFields());
+  $("studentForm").addEventListener("submit",submitStudent);
+  $("cancelForm").addEventListener("click",()=>{editingRecord=null;navigate("students");});
+  $("clearAllRecords").addEventListener("click",clearAll);
+  ["tableFilter","branchFilter","genderFilter","semesterFilter","sortSelect"].forEach(id=>$(id).addEventListener("input",renderStudents));
+  $("clearFilters").addEventListener("click",()=>{$("tableFilter").value="";$('branchFilter').value="";$('genderFilter').value="";$('semesterFilter').value="0";$('sortSelect').value="default";renderStudents();});
+  $("closeModal").addEventListener("click",()=>$("studentModal").close());
+  $("editFromModal").addEventListener("click",()=>{const r=currentModalRecord;$("studentModal").close();if(r)beginEdit(r.roll);});
+  initializeData();
+  renderSGPAFields();
+}
+</script>
+<script src="wasm/student_manager.js"></script>
+</body>
+</html>
