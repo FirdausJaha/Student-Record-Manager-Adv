@@ -175,7 +175,7 @@ function parseRecord(row) {
   const f = row.split("~");
   if (f.length < 15) return null;
   return {
-    roll: f[0], name: f[1], age: Number(f[2]), gender: f[3], mobile: f[4], branch: f[5], semester: Number(f[6]),
+    roll: f[0], name: f[1], age: Number(f[2]), gender: f[3], branch: f[4], mobile: f[5], semester: Number(f[6]),
     sgpa: f.slice(7, 14).map(v => v === "-" ? null : Number(v)), cgpa: f[14] === "-" ? null : Number(f[14])
   };
 }
@@ -186,7 +186,7 @@ function parseRecords(serialized) {
 }
 
 function recordsToRows(records) {
-  return records.map(r => [r.roll,r.name,r.age,r.gender,r.mobile,r.branch,r.semester,...r.sgpa.map(v => v == null ? "-" : Number(v).toFixed(2)),r.cgpa == null ? "-" : Number(r.cgpa).toFixed(2)].join("~")).join("|");
+  return records.map(r => [r.roll,r.name,r.age,r.gender,r.branch,r.mobile,r.semester,...r.sgpa.map(v => v == null ? "-" : Number(v).toFixed(2)),r.cgpa == null ? "-" : Number(r.cgpa).toFixed(2)].join("~")).join("|");
 }
 
 function saveLocal() {
