@@ -19,7 +19,6 @@
       <button class="nav-item" data-screen="students"><span>▤</span>Students</button>
       <button class="nav-item" data-screen="add"><span>＋</span>Add Student</button>
       <button class="nav-item" data-screen="analysis"><span>◒</span>Analysis</button>
-      <button class="nav-item" data-screen="about"><span>ⓘ</span>About Project</button>
     </nav>
   </aside>
 
@@ -83,7 +82,7 @@
             <button class="secondary small-btn" id="clearFilters">Clear Filters</button>
           </div>
           <div class="active-filters" id="activeFilters"></div>
-          <div class="table-wrap"><table class="main-table"><thead><tr><th>Roll Number</th><th>Student</th><th>Branch</th><th>Gender</th><th>Sem</th><th>CGPA</th><th>Actions</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+          <div class="table-wrap"><table class="main-table"><thead><tr><th>Roll Number</th><th>Student</th><th>Mobile Number</th><th>Gender</th><th>Sem</th><th>CGPA</th><th>Actions</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
           <div class="empty" id="tableEmpty"><div class="empty-icon">▤</div><h3>No matching students</h3><p>Try changing the search or filters.</p></div>
           <div class="table-footer"><span id="countText">0 students</span><span>No fixed student-count limit</span></div>
         </article>
@@ -135,24 +134,6 @@
 
         <article class="panel"><div class="panel-head"><div><h3>Semester Analysis</h3><p>Student count and average CGPA by current semester.</p></div></div><div id="semesterAnalysis" class="analysis-list"></div></article>
         <article class="panel"><div class="panel-head"><div><h3>CGPA Ranking</h3><p>Students ordered by calculated CGPA.</p></div></div><div id="rankingList" class="ranking-list"></div></article>
-      </section>
-
-      <section class="screen" id="screen-about">
-        <div class="section-heading"><div><h2>About Project</h2><p>Architecture and concepts used in the Advanced Edition.</p></div></div>
-        <article class="panel about-card">
-          <h3>Project Objective</h3>
-          <p>Student Record Manager is a C++-centered student management application delivered through a browser interface. C++ owns the student data, validation, searching, filtering, sorting, SGPA/CGPA calculation and analysis.</p>
-          <h3>Academic Model</h3>
-          <p>The application uses only a 10-point GPA scale. If the current semester is N, only SGPAs from semesters 1 through N−1 are entered. CGPA is calculated in C++ as the arithmetic mean of completed previous SGPAs and truncated to two decimal places. First-semester students show CGPA as N/A.</p>
-          <h3>Storage Model</h3>
-          <p>The C++ layer uses dynamically growing raw arrays rather than a fixed 100-student array. This removes an artificial application-level student limit. JavaScript serializes the C++ records into browser localStorage and imports them back into C++ when the page starts. Actual browser memory and storage quotas still apply.</p>
-          <h3>Technology</h3>
-          <div class="tech-list"><span>C++</span><span>WebAssembly</span><span>Emscripten</span><span>HTML</span><span>CSS</span><span>JavaScript</span><span>localStorage</span><span>GitHub Pages</span></div>
-          <h3>C++ Concepts Demonstrated</h3>
-          <ul><li>Arrays and two-dimensional arrays</li><li>Dynamic memory management</li><li>Strings and validation</li><li>Functions</li><li>Searching and filtering</li><li>Sorting</li><li>Deletion by shifting array elements</li><li>Aggregation and academic analysis</li><li>Emscripten/WebAssembly bindings</li></ul>
-          <h3>Demo Data</h3>
-          <p>The first launch contains 30 original demonstration students when no saved browser data exists. After that, saved data is restored instead of being overwritten.</p>
-        </article>
       </section>
     </div>
   </main>
@@ -503,6 +484,7 @@ function startApplication() {
   $("closeModal").addEventListener("click",()=>$("studentModal").close());
   $("editFromModal").addEventListener("click",()=>{const r=currentModalRecord;$("studentModal").close();if(r)beginEdit(r.roll);});
   initializeData();
+  renderAll();
   renderSGPAFields();
 }
 </script>
